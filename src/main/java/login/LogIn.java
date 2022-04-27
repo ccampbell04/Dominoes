@@ -1,13 +1,13 @@
+package login;
+
+import data.AllCustomers;
+import data.Customer;
+import engine.Dominoes;
+import input.Input;
+
 import java.util.List;
-import java.util.Scanner;
 
 public class LogIn {
-    private Scanner userInput = new Scanner(System.in);
-
-    private String input(String message) {
-        System.out.println(message);
-        return userInput.nextLine();
-    }
 
     private String getPassword(String emailAddress){
         AllCustomers allCustomers = new AllCustomers();
@@ -21,17 +21,35 @@ public class LogIn {
         return password;
     }
 
-    public void logIn() {
-        String emailAddress = input("Enter email address");
-        String password = getPassword(emailAddress);
-        if (password == "") {
-            System.out.println("You are not a user");
+    public boolean noAccount(String emailAddress) {
+        boolean accountCreated = false;
+        System.out.println("You are not a user");
+        String choice = Input.input("Would you like to register (y/n)");
+        if (choice.equalsIgnoreCase("y")) {
+            accountCreated = true;
+            Register.register(emailAddress);
         }
-        else if (password.equals(input("Enter password"))){
+
+        return accountCreated;
+    }
+
+    public void logIn() {
+        boolean loggedIn = false;
+        String emailAddress = Input.input("Enter email address");
+        String password = getPassword(emailAddress);
+        if (password.equals("")) {
+            loggedIn = noAccount(emailAddress);
+        }
+        else if (password.equals(Input.input("Enter password"))){
             System.out.println("You are logged in");
+            loggedIn = true;
         }
         else {
             System.out.println("Wrong password, no second chances");
+        }
+
+        if (loggedIn) {
+            Dominoes.setUpGame();
         }
     }
 
