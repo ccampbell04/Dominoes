@@ -18,6 +18,10 @@ public class Hands {
         return hand.remove(index);
     }
 
+    public void clear() {
+        hand.clear();
+    }
+
     public int length() {
         return hand.size();
     }
