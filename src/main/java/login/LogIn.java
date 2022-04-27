@@ -8,6 +8,7 @@ import input.Input;
 import java.util.List;
 
 public class LogIn {
+    private Dominoes dominoes = new Dominoes();
 
     private String getPassword(String emailAddress){
         AllCustomers allCustomers = new AllCustomers();
@@ -49,7 +50,7 @@ public class LogIn {
         }
 
         if (loggedIn) {
-            Dominoes.setUpGame();
+            dominoes.setUpGame();
         }
     }
 
