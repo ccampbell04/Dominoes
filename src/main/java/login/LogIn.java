@@ -21,7 +21,7 @@ public class LogIn {
         return password;
     }
 
-    public boolean noAccount(String emailAddress) {
+    private boolean noAccount(String emailAddress) {
         boolean accountCreated = false;
         System.out.println("You are not a user");
         String choice = Input.input("Would you like to register (y/n)");
