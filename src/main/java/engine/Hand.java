@@ -3,18 +3,18 @@ package engine;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hands {
-    private List<Tiles> hand = new ArrayList<>();
+public class Hand {
+    private List<Tile> hand = new ArrayList<>();
 
-    public List<Tiles> getHand() {
+    public List<Tile> getHand() {
         return hand;
     }
 
-    public void addTile(Tiles tile) {
+    public void addTile(Tile tile) {
         hand.add(tile);
     }
 
-    public Tiles playTile(int index) {
+    public Tile playTile(int index) {
         return hand.remove(index);
     }
 
@@ -27,7 +27,7 @@ public class Hands {
     }
 
     public void printHand() {
-        for (Tiles tile:hand) {
+        for (Tile tile:hand) {
             System.out.println(tile);
         }
     }

@@ -8,8 +8,6 @@ import input.Input;
 import java.util.List;
 
 public class LogIn {
-    private Dominoes dominoes = new Dominoes();
-
     private String getPassword(String emailAddress){
         AllCustomers allCustomers = new AllCustomers();
         String password = "";
@@ -34,7 +32,7 @@ public class LogIn {
         return accountCreated;
     }
 
-    public void logIn() {
+    public boolean logIn() {
         boolean loggedIn = false;
         String emailAddress = Input.input("Enter email address");
         String password = getPassword(emailAddress);
@@ -49,9 +47,7 @@ public class LogIn {
             System.out.println("Wrong password, no second chances");
         }
 
-        if (loggedIn) {
-            dominoes.setUpGame();
-        }
+        return loggedIn;
     }
 
     public static void main(String[] args){

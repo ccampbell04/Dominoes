@@ -2,64 +2,93 @@ package engine;
 
 import display.Board;
 import input.Input;
+import login.LogIn;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class Dominoes {
-    private List<Tiles> deck = new ArrayList<>();
-    public Hands userHand = new Hands();
-    public Hands computerHand = new Hands();
-    public Tiles startTile;
-    public Tiles leftTile;
-    public Tiles rightTile;
+    private final List<Tile> deck = new ArrayList<>();
+    private final Hand initialUserHand = new Hand();
+    private final Hand initialComputerHand = new Hand();
+    private Tile startTile;
+    private Tile leftTile;
+    private Tile rightTile;
     public int userScore = 0;
     public int computerScore = 0;
+
+    public Tile pickUp() {
+        return deck.remove(0);
+    }
+
+    public boolean isDeckEmpty() {
+        return deck.size() == 0;
+    }
+
+    public Tile getStartTile() {
+        return startTile;
+    }
+
+    private void setStartTile() {
+        startTile = deck.remove(0);
+    }
+
+    public Tile getLeftTile() {
+        return leftTile;
+    }
+
+    public void setLeftTile(Tile leftTile) {
+        this.leftTile = leftTile;
+    }
+
+    public Tile getRightTile() {
+        return rightTile;
+    }
+
+    public void setRightTile(Tile rightTile) {
+        this.rightTile = rightTile;
+    }
 
     private void generateDeck() {
         for (int i = 0; i < 7 ; i++) {
             for (int x = i; x < 7; x++) {
-                deck.add(new Tiles(i, x));
+                deck.add(new Tile(i, x));
             }
         }
     }
 
-    private void setStartTile() {
-        startTile = deck.remove(deck.size() - 1);
-    }
-
     private void dealHands() {
-        userHand.clear();
-        computerHand.clear();
+        initialUserHand.clear();
+        initialComputerHand.clear();
         for (int i = 0; i < 7; i++) {
-            userHand.addTile(deck.remove(deck.size() - 1));
-            computerHand.addTile(deck.remove(deck.size() - 1));
+            initialUserHand.addTile(deck.remove(0));
+            initialComputerHand.addTile(deck.remove(0));
         }
     }
 
     private int setStartPlayer() {
-        Tiles highestUserTile = new Tiles(0,0);
-        Tiles highestComputerTile = new Tiles(0,0);
+        Tile highestUserTile = new Tile(0,0);
+        Tile highestComputerTile = new Tile(0,0);
 
-        for (Tiles tile : userHand.getHand()){
+        for (Tile tile : initialUserHand.getHand()){
             if (tile.isDouble()) {
                 highestUserTile = tile;
             }
         }
 
         if (highestUserTile.getTotal() == 0) {
-            highestUserTile = checkHighestNonDouble(userHand);
+            highestUserTile = checkHighestNonDouble(initialUserHand);
         }
 
-        for (Tiles tile : computerHand.getHand()){
+        for (Tile tile : initialComputerHand.getHand()){
             if (tile.isDouble()) {
                 highestComputerTile = tile;
             }
         }
 
         if (highestComputerTile.getTotal()==0) {
-            highestComputerTile = checkHighestNonDouble(computerHand);
+            highestComputerTile = checkHighestNonDouble(initialComputerHand);
         }
 
         int result = highestUserTile.compareTo(highestComputerTile);
@@ -71,10 +100,10 @@ public class Dominoes {
         return 1;
     }
 
-    private Tiles checkHighestNonDouble(Hands hand) {
-        Tiles highestTile = new Tiles(0,0);
+    private Tile checkHighestNonDouble(Hand hand) {
+        Tile highestTile = new Tile(0,0);
         int result;
-        for (Tiles tile: hand.getHand()) {
+        for (Tile tile: hand.getHand()) {
             result = tile.compareTo(highestTile);
             if (result > 0) {
                 highestTile = tile;
@@ -84,209 +113,21 @@ public class Dominoes {
         return highestTile;
     }
 
-
-
-    private void userTurn() {
-        Board.displayBoard(startTile, leftTile, rightTile);
-        int leftNum = getLeftNum();
-        int rightNum = getRightNum();
-
-        System.out.println("Here is your hand - \n");
-        userHand.printHand();
-
-        boolean ableToPlay = ableToPlay(userHand, leftNum, rightNum);
-        boolean validChoice = false;
-        boolean tilesInDeck = true;
-
-        if (ableToPlay) {
-            int posOfTile = 0;
-            while (!validChoice) {
-                posOfTile = Integer.parseInt(Input.input("What position tile do you want to play"));
-                validChoice = validChoice(userHand, posOfTile - 1, leftNum, rightNum);
-
-                if (!validChoice) {
-                    System.out.println("Invalid tile");
-                }
-            }
-
-            Tiles played = userHand.playTile(posOfTile - 1);
-            updateTiles(played, leftNum, rightNum);
-        } else {
-            while (!ableToPlay && tilesInDeck) {
-                System.out.println("You can't play any cards... picking one up");
-                try {
-                    computerHand.addTile(deck.remove(deck.size() - 1));
-                } catch (IndexOutOfBoundsException e) {
-                    System.out.println("Deck is empty");
-                    tilesInDeck = false;
-                }
-                ableToPlay = ableToPlay(userHand, leftNum, rightNum);
-            }
-            System.out.println("You now have a valid tile!");
-            userHand.printHand();
-            int posOfTile = Integer.parseInt(Input.input("What position tile do you want to play"));
-            Tiles played = userHand.playTile(posOfTile - 1);
-            updateTiles(played, leftNum, rightNum);
-        }
-    }
-
-    private void computerTurn() {
-        int leftNum = getLeftNum();
-        int rightNum = getRightNum();
-        boolean tilesInDeck = true;
-
-        boolean ableToPlay = ableToPlay(computerHand, leftNum, rightNum);
-
-        if (ableToPlay) {
-            int posOfBest = bestCard(computerHand, leftNum, rightNum);
-            Tiles played = computerHand.playTile(posOfBest);
-            System.out.println("Computer plays " + played);
-            updateTiles(played, leftNum, rightNum);
-        } else {
-            while (!ableToPlay && tilesInDeck) {
-                try {
-                    computerHand.addTile(deck.remove(deck.size() - 1));
-                } catch (IndexOutOfBoundsException e) {
-                    System.out.println("Deck is now empty");
-                    tilesInDeck = false;
-                }
-
-                ableToPlay = ableToPlay(computerHand, leftNum, rightNum);
-                System.out.println("Computer unable to play... picking up a tile");
-            }
-            int posOfBest = bestCard(computerHand, leftNum, rightNum);
-            Tiles played = computerHand.playTile(posOfBest);
-            System.out.println("Computer plays " + played);
-            updateTiles(played, leftNum, rightNum);
-        }
-    }
-
-    private int bestCard(Hands hand, int leftNum, int rightNum) {
-        int bestTilePos = 0;
-        int counter = -1;
-        for (Tiles tile : hand.getHand()) {
-            counter += 1;
-            if (tile.getSide1() == leftNum || tile.getSide2() == leftNum) {
-                bestTilePos = compareBestTiles(tile, bestTilePos, hand, counter);
-            } else if (tile.getSide1() == rightNum || tile.getSide2() == rightNum) {
-                bestTilePos = compareBestTiles(tile, bestTilePos, hand, counter);
-            }
-        }
-
-        if (validChoice(hand, bestTilePos, leftNum, rightNum)) {
-            return bestTilePos;
-        }
-        return bestWild(hand);
-    }
-
-    private int bestWild(Hands hand) {
-        int counter = 0;
-        for (Tiles tile : hand.getHand()) {
-            if (tile.getSide1() == 0 || tile.getSide2() == 0) {
-                return counter;
-            }
-            counter++;
-        }
-        return counter;
-    }
-    private boolean validChoice(Hands hand, int pos, int leftNum, int rightNum ) {
-        Tiles tile = hand.getHand().get(pos);
-
-        if (tile.getSide1() == leftNum || tile.getSide2() == leftNum) {
-            return true;
-        } else if (tile.getSide1() == rightNum || tile.getSide2() == rightNum) {
-            return true;
-        } else if (rightNum == 0 || leftNum == 0) {
-            return true;
-        } else if (tile.getSide1() == 0 || tile.getSide2() == 0) {
-            return true;
-        }
-        return false;
-    }
-
-    private int compareBestTiles(Tiles tile, int bestTilePos, Hands hand, int counter) {
-        int tileHighestSide;
-        int bestTileHighestSide;
-
-        if (tile.getSide1() > tile.getSide2()) {
-            tileHighestSide = tile.getSide1();
-        } else if (tile.getSide2() > tile.getSide1()) {
-            tileHighestSide = tile.getSide2();
-        } else {
-            tileHighestSide = tile.getSide1();
-        }
-
-        Tiles bestTile = hand.getHand().get(bestTilePos);
-
-        if (bestTile.getSide1() > bestTile.getSide2()) {
-            bestTileHighestSide = bestTile.getSide1();
-        } else if (bestTile.getSide2() > bestTile.getSide1()) {
-            bestTileHighestSide = bestTile.getSide2();
-        } else {
-            bestTileHighestSide = bestTile.getSide1();
-        }
-
-        if (tileHighestSide > bestTileHighestSide) {
-            return counter;
-        } else if (bestTileHighestSide > tileHighestSide) {
-            return bestTilePos;
-        } else {
-            return counter;
-        }
-    }
-
-    private void updateTiles(Tiles played, int leftNum, int rightNum) {
-        if (played.getSide1() == rightNum) {
-            rightTile = played;
-        } else if (played.getSide2() == rightNum) {
-            played.rotate();
-            rightTile = played;
-        } else if (played.getSide1() == leftNum) {
-            played.rotate();
-            leftTile = played;
-        } else if (played.getSide2() == leftNum) {
-            leftTile = played;
-        } else if (played.getSide1() == 0 || played.getSide2() == 0) {
-            if (played.getSide2() != 0) {
-                    played.rotate();
-                }
-            leftTile = played;
-        } else if (leftNum == 0 || rightNum == 0) {
-            leftTile = played;
-        }
-    }
-
-    private boolean ableToPlay(Hands hand, int leftNum, int rightNum) {
-        for (Tiles tile : hand.getHand()) {
-            if (tile.getSide1() == leftNum || tile.getSide2() == leftNum) {
-                return true;
-            } else if (tile.getSide1() == rightNum || tile.getSide2() == rightNum) {
-                return true;
-            } else if (tile.getSide1() == 0 || tile.getSide2() == 0) {
-                return true;
-            } else if (leftNum == 0 || rightNum == 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private int getLeftNum() {
+    public int getLeftNum() {
         if (leftTile != null) {
             return leftTile.getSide1();
         }
         return startTile.getSide1();
     }
 
-    private int getRightNum() {
+    public int getRightNum() {
         if (rightTile != null) {
             return rightTile.getSide2();
         }
         return startTile.getSide2();
     }
 
-    private boolean checkGameWinner(Hands hand) {
+    private boolean checkGameWinner(Hand hand) {
         boolean winner = false;
 
         if (hand.length() == 0) {
@@ -296,62 +137,44 @@ public class Dominoes {
         return winner;
     }
 
-    private int getScore(Hands hand) {
-        int score = 0;
-
-        for (Tiles tile : hand.getHand()) {
-            score += tile.getSide1() + tile.getSide2();
-        }
-
-        score = 5*(Math.round(score/5));
-
-        return score;
-    }
-
     private void play(int startPlayer) {
         boolean gameOver = false;
         final String userTurn = "--- USER TURN ---";
         final String compTurn = "--- COMPUTER TURN ---";
         final String scores = "--- SCORES ---";
 
-        startPlayer = 1;
+        Player player1 = new Player(initialUserHand, PlayerType.USER, userTurn);
+        Player player2 = new Player(initialComputerHand, PlayerType.COMPUTER, compTurn);
 
-        if (startPlayer == 0) {
-            while (!gameOver) {
-                System.out.println(userTurn);
-                userTurn();
-                gameOver = checkGameWinner(userHand);
-
-                if (gameOver) {
-                    break;
-                }
-
-                System.out.println(compTurn);
-                computerTurn();
-                gameOver = checkGameWinner(computerHand);
-            }
-        } else {
-            while (!gameOver) {
-                System.out.println(compTurn);
-                computerTurn();
-                gameOver = checkGameWinner(computerHand);
-
-                if (gameOver) {
-                    break;
-                }
-
-                System.out.println(userTurn);
-                userTurn();
-                gameOver = checkGameWinner(userHand);
-            }
+        if (startPlayer == 1) {
+            player1.setPlayerHand(initialComputerHand);
+            player1.setType(PlayerType.COMPUTER);
+            player1.setHeader(compTurn);
+            player2.setPlayerHand(initialUserHand);
+            player2.setType(PlayerType.USER);
+            player2.setHeader(userTurn);
         }
 
-        userScore = getScore(computerHand);
-        computerScore = getScore(userHand);
+        while(!gameOver) {
+            player1.printHeader();
+            player1.turn();
+            gameOver = checkGameWinner(player1.getPlayerHand());
+
+            if (gameOver) {
+                break;
+            }
+
+            player2.printHeader();
+            player2.turn();
+            gameOver = checkGameWinner(player2.getPlayerHand());
+        }
+
+        player1.setScore(player2.getPlayerHand());
+        player2.setScore(player1.getPlayerHand());
 
         System.out.println(scores);
-        System.out.println("User score: " + userScore);
-        System.out.println("Computer score: " + computerScore);
+        System.out.println(player1.getType() + " score: " + player1.getScore());
+        System.out.println(player2.getType() + " score: " + player2.getScore());
     }
 
     public void setUpGame() {
@@ -369,6 +192,14 @@ public class Dominoes {
             }
             choice = Input.input("Thanks for playing!\n Would you like to play again (y/n)");
         }
+    }
 
+    public static void main(String[] args) {
+        LogIn logIn = new LogIn();
+        Dominoes dominoes = new Dominoes();
+
+        if (logIn.logIn()) {
+            dominoes.setUpGame();
+        }
     }
 }
