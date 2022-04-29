@@ -8,7 +8,7 @@ public class Player {
     private PlayerType type;
     private String header;
     private int score;
-    Dominoes dominoes = new Dominoes();
+    Dominoes dominoes = Dominoes.getInstance();
 
     public Player(Hand hand, PlayerType type, String header) {
         this.playerHand = hand;

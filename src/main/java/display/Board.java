@@ -6,7 +6,7 @@ import input.Input;
 
 public class Board {
 
-    static Dominoes dominoes = new Dominoes();
+    static Dominoes dominoes = Dominoes.getInstance();
 
     public static void displayBoard(Tile startTile, Tile leftTile, Tile rightTile) {
         if (leftTile == null && rightTile == null) {

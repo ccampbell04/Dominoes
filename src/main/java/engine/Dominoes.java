@@ -17,6 +17,13 @@ public class Dominoes {
     private Tile rightTile;
     public int userScore = 0;
     public int computerScore = 0;
+    private static final Dominoes instance = new Dominoes();
+
+    private Dominoes() {}
+
+    public static Dominoes getInstance() {
+        return instance;
+    }
 
     public Tile pickUp() {
         return deck.remove(0);
@@ -196,7 +203,7 @@ public class Dominoes {
 
     public static void main(String[] args) {
         LogIn logIn = new LogIn();
-        Dominoes dominoes = new Dominoes();
+        Dominoes dominoes = getInstance();
 
         if (logIn.logIn()) {
             dominoes.setUpGame();
