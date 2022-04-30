@@ -20,9 +20,11 @@ public class TestDominoes {
     }
 
     @Test
-    // NOTE: Test fails when ran as a suite but passes when ran individually
     public void testDealHands() {
+        Hand userHand = new Hand();
         Dominoes dominoes = Dominoes.getInstance();
+
+        dominoes.setInitialUserHand(userHand);
 
         dominoes.generateDeck();
         dominoes.dealHands();
