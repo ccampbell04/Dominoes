@@ -32,6 +32,10 @@ public class Tile implements Comparable<Tile> {
         return side1 == side2;
     }
 
+    public boolean isWild() {
+        return side1 == 0 || side2 == 0;
+    }
+
     @Override
     public String toString() {
         return "[" + side1 + " | " + side2 + "]";

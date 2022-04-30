@@ -7,7 +7,7 @@ public class Player {
     private Hand playerHand;
     private PlayerType type;
     private String header;
-    private int score;
+    private int score = 0;
     Dominoes dominoes = Dominoes.getInstance();
 
     public Player(Hand hand, PlayerType type, String header) {
@@ -21,13 +21,12 @@ public class Player {
     }
 
     public void setScore(Hand hand) {
-        int score = 0;
-
+        int tempScore = 0;
         for (Tile tile: hand.getHand()) {
-            score += tile.getTotal();
+            tempScore += tile.getTotal();
         }
 
-        this.score = 5*(Math.round(score/5));
+        score = 5*(Math.round(tempScore/5)) + score;
     }
 
     public int getScore() {
@@ -58,7 +57,7 @@ public class Player {
         return type == PlayerType.USER;
     }
 
-    private boolean validChoice(Tile tile) {
+    protected boolean validChoice(Tile tile) {
         int leftNum = dominoes.getLeftNum();
         int rightNum = dominoes.getRightNum();
 
@@ -86,7 +85,7 @@ public class Player {
         return validTile;
     }
 
-    private int bestCard() {
+    protected int bestCard() {
         int leftNum = dominoes.getLeftNum();
         int rightNum = dominoes.getRightNum();
         int bestTilePos = 0;
@@ -103,15 +102,18 @@ public class Player {
 
         Tile tile = playerHand.getHand().get(bestTilePos);
 
-        if (validChoice(tile)) {
+        if (validChoice(tile) && !tile.isWild()) {
             return bestTilePos;
         }
         return bestWild(playerHand);
     }
 
-    private int compareBestTiles(Tile tile, int bestTilePos, Hand hand, int counter) {
+    protected int compareBestTiles(Tile tile, int bestTilePos, Hand hand, int counter) {
         int tileHighestSide = setHighestSide(tile);
-        int bestTileHighestSide = setHighestSide(hand.getHand().get(bestTilePos));
+        int bestTileHighestSide = 0;
+        if (validChoice(hand.getHand().get(bestTilePos))) {
+            bestTileHighestSide = setHighestSide(hand.getHand().get(bestTilePos));
+        }
 
         if (tileHighestSide > bestTileHighestSide) {
             return counter;
@@ -122,7 +124,7 @@ public class Player {
         }
     }
 
-    private int setHighestSide(Tile tile) {
+    protected int setHighestSide(Tile tile) {
         int highestSide;
 
         if (tile.getSide1() > tile.getSide2()) {
@@ -136,18 +138,18 @@ public class Player {
         return highestSide;
     }
 
-    private int bestWild(Hand hand) {
-        int counter = 0;
+    protected int bestWild(Hand hand) {
+        Tile bestWildTile = null;
         for (Tile tile : hand.getHand()) {
             if (tile.getSide1() == 0 || tile.getSide2() == 0) {
-                return counter;
+                bestWildTile = tile;
             }
-            counter++;
         }
-        return counter;
+
+        return hand.getHand().indexOf(bestWildTile);
     }
 
-    private void updateTiles(Tile played) {
+    protected void updateTiles(Tile played) {
         int leftNum = dominoes.getLeftNum();
         int rightNum = dominoes.getRightNum();
 
@@ -166,8 +168,10 @@ public class Player {
                 played.rotate();
             }
             dominoes.setLeftTile(played);
-        } else if (leftNum == 0 || rightNum == 0) {
+        } else if (leftNum == 0) {
             dominoes.setLeftTile(played);
+        } else if (rightNum == 0) {
+            dominoes.setRightTile(played);
         }
     }
 
@@ -188,9 +192,10 @@ public class Player {
                 }
             }
         } else {
+            playerHand.printHand();
             posOfTile = bestCard();
         }
-        Tile played = playerHand.playTile(posOfTile);
+        Tile played = playerHand.placeTile(posOfTile);
         System.out.println(type + " played " + played);
         updateTiles(played);
     }
@@ -202,6 +207,7 @@ public class Player {
         }
 
         if (ableToPLay(playerHand)) {
+            playerHand.printHand();
             playTile();
         }else if (dominoes.isDeckEmpty()) {
             System.out.println("Deck is empty ending turn");
