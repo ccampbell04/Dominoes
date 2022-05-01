@@ -1,11 +1,11 @@
 package engine;
 
-public class Tiles implements Comparable<Tiles> {
+public class Tile implements Comparable<Tile> {
 
     private int side1;
     private int side2;
 
-    public Tiles(int side1, int side2) {
+    public Tile(int side1, int side2) {
         this.side1 = side1;
         this.side2 = side2;
     }
@@ -32,13 +32,17 @@ public class Tiles implements Comparable<Tiles> {
         return side1 == side2;
     }
 
+    public boolean isWild() {
+        return side1 == 0 || side2 == 0;
+    }
+
     @Override
     public String toString() {
         return "[" + side1 + " | " + side2 + "]";
     }
 
     @Override
-    public int compareTo(Tiles compTile) {
+    public int compareTo(Tile compTile) {
         int biggestSide;
         int biggestCompSide;
 

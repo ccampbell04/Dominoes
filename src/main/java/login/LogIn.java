@@ -8,7 +8,11 @@ import input.Input;
 import java.util.List;
 
 public class LogIn {
-    private Dominoes dominoes = new Dominoes();
+    protected Input userInput = new Input();
+
+    public void setUserInput(Input userInput){
+        this.userInput = userInput;
+    }
 
     private String getPassword(String emailAddress){
         AllCustomers allCustomers = new AllCustomers();
@@ -22,10 +26,10 @@ public class LogIn {
         return password;
     }
 
-    private boolean noAccount(String emailAddress) {
+    protected boolean noAccount(String emailAddress) {
         boolean accountCreated = false;
         System.out.println("You are not a user");
-        String choice = Input.input("Would you like to register (y/n)");
+        String choice = userInput.input("Would you like to register (y/n)");
         if (choice.equalsIgnoreCase("y")) {
             accountCreated = true;
             Register.register(emailAddress);
@@ -34,14 +38,14 @@ public class LogIn {
         return accountCreated;
     }
 
-    public void logIn() {
+    public boolean logIn() {
         boolean loggedIn = false;
-        String emailAddress = Input.input("Enter email address");
+        String emailAddress = userInput.input("Enter email address");
         String password = getPassword(emailAddress);
         if (password.equals("")) {
             loggedIn = noAccount(emailAddress);
         }
-        else if (password.equals(Input.input("Enter password"))){
+        else if (password.equals(userInput.input("Enter password"))){
             System.out.println("You are logged in");
             loggedIn = true;
         }
@@ -49,13 +53,6 @@ public class LogIn {
             System.out.println("Wrong password, no second chances");
         }
 
-        if (loggedIn) {
-            dominoes.setUpGame();
-        }
-    }
-
-    public static void main(String[] args){
-        LogIn logIn = new LogIn();
-        logIn.logIn();
+        return loggedIn;
     }
 }

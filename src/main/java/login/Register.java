@@ -7,13 +7,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class Register {
+    public static Input userInput = new Input();
+
     public static void register(String emailAddress) {
         System.out.println("Register for an account -");
-        String firstName = Input.input("Enter your first name");
-        String surname = Input.input("Enter your surname");
-        String password = Input.input("Enter your password");
+        String firstName = userInput.input("Enter your first name");
+        String surname = userInput.input("Enter your surname");
+        String password = userInput.input("Enter your password");
 
-        FileWriter fw = null;
+        FileWriter fw;
         try {
             fw = new FileWriter("src/main/resources/customer.csv", true);
             BufferedWriter bw = new BufferedWriter(fw);

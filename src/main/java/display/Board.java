@@ -1,14 +1,15 @@
 package display;
 
 import engine.Dominoes;
-import engine.Tiles;
+import engine.Tile;
 import input.Input;
 
 public class Board {
 
-    static Dominoes dominoes = new Dominoes();
+    protected static Input userInput = new Input();
+    static Dominoes dominoes = Dominoes.getInstance();
 
-    public static void displayBoard(Tiles startTile, Tiles leftTile, Tiles rightTile) {
+    public static void displayBoard(Tile startTile, Tile leftTile, Tile rightTile) {
         if (leftTile == null && rightTile == null) {
             displayStart(startTile);
         } else if (leftTile == null) {
@@ -20,25 +21,25 @@ public class Board {
         }
     }
 
-    private static void displayStart(Tiles startTile) {
+    private static void displayStart(Tile startTile) {
         System.out.println("-----------------");
         System.out.println("Starting tile");
         System.out.println(startTile);
     }
 
-    private static void leftNull(Tiles startTile, Tiles rightTile) {
+    private static void leftNull(Tile startTile, Tile rightTile) {
         System.out.println("-----------------");
         System.out.println("The tiles on the edge of the board are\n");
         System.out.println("Left: " + startTile + "   |   " + "Right: " + rightTile);
     }
 
-    private static void rightNull(Tiles startTile, Tiles leftTile) {
+    private static void rightNull(Tile startTile, Tile leftTile) {
         System.out.println("-----------------");
         System.out.println("The tiles on the edge of the board are\n");
         System.out.println("Left: " + leftTile + "   |   " + "Right: " + startTile);
     }
 
-    private static void displayEdgeTiles(Tiles leftTile, Tiles rightTile) {
+    private static void displayEdgeTiles(Tile leftTile, Tile rightTile) {
         System.out.println("-----------------");
         System.out.println("The tiles on the edge of the board are\n");
         System.out.println("Left: " + leftTile + "   |   " + "Right: " + rightTile);
@@ -52,6 +53,6 @@ public class Board {
         System.out.println(" - If a player cannot play, they continue picking up dominoes until they can play");
         System.out.println(" - This game is a 1 vs 1 between you and the computer");
         System.out.println(" - A tile with 0 on it e.g. [0 | 4] is the same as blank and therefore a wild card");
-        Input.input("Press any key to continue");
+        userInput.input("Press any key to continue");
     }
 }
