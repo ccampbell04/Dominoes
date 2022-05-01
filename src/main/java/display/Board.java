@@ -6,6 +6,7 @@ import input.Input;
 
 public class Board {
 
+    protected static Input userInput = new Input();
     static Dominoes dominoes = Dominoes.getInstance();
 
     public static void displayBoard(Tile startTile, Tile leftTile, Tile rightTile) {
@@ -52,6 +53,6 @@ public class Board {
         System.out.println(" - If a player cannot play, they continue picking up dominoes until they can play");
         System.out.println(" - This game is a 1 vs 1 between you and the computer");
         System.out.println(" - A tile with 0 on it e.g. [0 | 4] is the same as blank and therefore a wild card");
-        Input.input("Press any key to continue");
+        userInput.input("Press any key to continue");
     }
 }

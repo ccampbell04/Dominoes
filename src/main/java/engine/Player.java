@@ -9,6 +9,7 @@ public class Player {
     private String header;
     private int score = 0;
     Dominoes dominoes = Dominoes.getInstance();
+    protected Input userInput = new Input();
 
     public Player(Hand hand, PlayerType type, String header) {
         this.playerHand = hand;
@@ -65,12 +66,9 @@ public class Player {
             return true;
         } else if (tile.getSide1() == rightNum || tile.getSide2() == rightNum) {
             return true;
-        } else if (rightNum == 0 || leftNum == 0) {
-            return true;
         } else if (tile.getSide1() == 0 || tile.getSide2() == 0) {
             return true;
-        }
-        return false;
+        } else return rightNum == 0 || leftNum == 0;
     }
 
     private boolean ableToPLay(Hand playerHand) {
@@ -181,7 +179,7 @@ public class Player {
 
         if (isUser()) {
             while (!validChoice) {
-                posOfTile = Integer.parseInt(Input.input("What position tile do you want to play - 1 to " +
+                posOfTile = Integer.parseInt(userInput.input("What position tile do you want to play - 1 to " +
                         playerHand.length()));
                 posOfTile -= 1;
                 Tile tile = playerHand.getHand().get(posOfTile);

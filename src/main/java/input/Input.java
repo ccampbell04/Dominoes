@@ -3,9 +3,13 @@ package input;
 import java.util.Scanner;
 
 public class Input {
-    private static Scanner userInput = new Scanner(System.in);
+    private Scanner userInput = new Scanner(System.in);
 
-    public static String input(String message) {
+    public void setUserInput(Scanner userInput){
+        this.userInput = userInput;
+    }
+
+    public String input(String message) {
         System.out.println(message);
         return userInput.nextLine();
     }

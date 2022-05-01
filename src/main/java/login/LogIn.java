@@ -8,6 +8,12 @@ import input.Input;
 import java.util.List;
 
 public class LogIn {
+    protected Input userInput = new Input();
+
+    public void setUserInput(Input userInput){
+        this.userInput = userInput;
+    }
+
     private String getPassword(String emailAddress){
         AllCustomers allCustomers = new AllCustomers();
         String password = "";
@@ -20,10 +26,10 @@ public class LogIn {
         return password;
     }
 
-    private boolean noAccount(String emailAddress) {
+    protected boolean noAccount(String emailAddress) {
         boolean accountCreated = false;
         System.out.println("You are not a user");
-        String choice = Input.input("Would you like to register (y/n)");
+        String choice = userInput.input("Would you like to register (y/n)");
         if (choice.equalsIgnoreCase("y")) {
             accountCreated = true;
             Register.register(emailAddress);
@@ -34,12 +40,12 @@ public class LogIn {
 
     public boolean logIn() {
         boolean loggedIn = false;
-        String emailAddress = Input.input("Enter email address");
+        String emailAddress = userInput.input("Enter email address");
         String password = getPassword(emailAddress);
         if (password.equals("")) {
             loggedIn = noAccount(emailAddress);
         }
-        else if (password.equals(Input.input("Enter password"))){
+        else if (password.equals(userInput.input("Enter password"))){
             System.out.println("You are logged in");
             loggedIn = true;
         }

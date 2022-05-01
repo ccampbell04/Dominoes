@@ -19,6 +19,7 @@ public class Dominoes {
     private Tile leftTile;
     private Tile rightTile;
     private static final Dominoes instance = new Dominoes();
+    protected Input userInput = new Input();
 
     public void setInitialUserHand(Hand initialUserHand) {
         this.initialUserHand = initialUserHand;
@@ -213,7 +214,7 @@ public class Dominoes {
             int startPlayer = setStartPlayer();
             play(startPlayer);
 
-            choice = Input.input("Thanks for playing!\nWould you like to play again (y/n)");
+            choice = userInput.input("Thanks for playing!\nWould you like to play again (y/n)");
         }
     }
 
