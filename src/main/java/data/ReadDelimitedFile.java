@@ -9,26 +9,24 @@ import java.util.Scanner;
 public class ReadDelimitedFile {
 
     private String fileDelimiter = ",";
-    private String filePathPrefix = "src/main/resources/";
+
+    private Load loadFile = new LoadFile();
 
     public void setFileDelimiter(String fileDelimiter){
         this.fileDelimiter = fileDelimiter;
     }
 
-    public List<String[]> getFileData(String fileName){
-        List<String[]> fileData = new ArrayList<String[]>();
-        try {
-            File propertyFile = new File(filePathPrefix+ fileName);
-            Scanner propertyReader = new Scanner(propertyFile);
-            while (propertyReader.hasNextLine()) {
-                String fileRow = propertyReader.nextLine();
-                fileData.add(fileRow.split(fileDelimiter));
-            }
-            propertyReader.close();
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
+    public void setLoadFile(Load loadFile) {
+        this.loadFile = loadFile;
+    }
+
+    public List<String[]> getFileData(String fileName) {
+        List<String[]> delimtedData = new ArrayList<String[]>();
+
+        List<String> fileData = loadFile.getFileData(fileName);
+        for (String row : fileData) {
+            delimtedData.add(row.split(fileDelimiter));
         }
-        return fileData;
+        return delimtedData;
     }
 }
